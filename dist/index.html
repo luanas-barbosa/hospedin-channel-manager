@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hospedin — Channel Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              montserrat: ['Montserrat', 'sans-serif'],
+              opensans: ['Open Sans', 'sans-serif'],
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      :root {
+        --color-teal-dim: #D9F3EF;
+        --color-teal-light: #5ECFC1;
+        --color-teal: #32BBAA;
+        --color-teal-dark: #228A7C;
+        --color-navy-dim: #E3E9F4;
+        --color-navy-light: #374E7A;
+        --color-navy: #1B2B4C;
+        --color-navy-dark: #05183C;
+        --color-white: #FFFFFF;
+        --color-neutral-100: #F5F6FA;
+        --color-neutral-200: #EBEEF2;
+        --color-neutral-300: #DBDFEA;
+        --color-neutral-400: #B7C2D0;
+        --color-neutral-500: #8094AE;
+        --color-neutral-600: #6E82A5;
+        --color-neutral-700: #526484;
+        --color-neutral-800: #364A63;
+        --color-neutral-900: #1F2B3A;
+        --color-purple: #765AA6;
+        --color-yellow: #FBDE64;
+        --color-guava: #F06672;
+        --color-aqua: #45C3D5;
+        --color-pink: #C1529B;
+        --color-success: #1EE0AC;
+        --color-danger: #E85347;
+        --color-warning: #F4BD0E;
+        --color-info: #09C2DE;
+        --shadow-card: 1px 1px 4px rgba(0,0,0,.10);
+        --shadow-modal: 0 8px 24px rgba(0,0,0,.12);
+        --shadow-table-row: inset 0 -1px 0 #D6DDEE;
+        --radius-input: 4px;
+        --radius-btn: 5px;
+        --radius-card: 6px;
+        --radius-lg: 8px;
+      }
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        font-family: 'Open Sans', sans-serif;
+        font-size: 14px;
+        line-height: 24px;
+        color: var(--color-neutral-900);
+        background: var(--color-neutral-100);
+        margin: 0;
+        padding: 0;
+      }
+      h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; margin: 0; }
+      h1 { font-size: 28px; line-height: 32px; font-weight: 700; letter-spacing: -0.01em; }
+      h2 { font-size: 22px; line-height: 28px; font-weight: 700; }
+      h3 { font-size: 16px; line-height: 24px; font-weight: 600; }
+      #root { height: 100%; }
+      .label-text {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .caption {
+        font-size: 12px;
+        line-height: 20px;
+        color: var(--color-neutral-600);
+      }
+      /* Scrollbar */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: #B7C2D0; border-radius: 3px; }
+      /* Tab underline animation */
+      .tab-active { border-bottom: 2px solid var(--color-teal); color: var(--color-teal); font-weight: 700; }
+      /* Switch */
+      .switch-track { width: 38px; height: 22px; border-radius: 11px; transition: background 0.2s; cursor: pointer; position: relative; display: inline-block; flex-shrink: 0; }
+      .switch-track input { opacity: 0; width: 0; height: 0; position: absolute; }
+      .switch-knob {
+        position: absolute;
+        top: 4px; left: 4px;
+        width: 14px; height: 14px;
+        border-radius: 50%;
+        background: white;
+        transition: transform 0.2s;
+        pointer-events: none;
+      }
+      .switch-track.on { background: var(--color-success); }
+      .switch-track.off { background: var(--color-neutral-300); }
+      .switch-track.on .switch-knob { transform: translateX(16px); }
+    </style>
+    <script type="module" crossorigin src="/assets/index-BYIOmf2t.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
