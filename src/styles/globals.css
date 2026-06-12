@@ -1,0 +1,282 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@source "../**/*.{ts,tsx,jsx,js}";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─── Hospedin Design System – Token Definitions ─────────────────────────── */
+
+@theme inline {
+  /* shadcn semânticos */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Radius tokens */
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+  --radius-button: 5px;
+  --radius-pill: 9999px;
+
+  /* ── Brand colors (estáticos) ── */
+  --color-brand-purple:      #765AA6;
+  --color-brand-dark-blue:   #29415E;
+  --color-brand-dark-blue-1: #406591;
+  --color-brand-dark-gray:   #38383D;
+  --color-brand-yellow:      #FBDE64;
+  --color-brand-guava:       #F06672;
+  --color-brand-pink:        #C1529B;
+  --color-brand-aqua:        #45C3D5;
+  --color-brand-teal:        #32BBAA;
+
+  /* ── UI Primary (teal ramp) ── */
+  --color-ui-primary-dim:     var(--ui-primary-dim);
+  --color-ui-primary-light:   #5ECFC1;
+  --color-ui-primary-default: #32BBAA;
+  --color-ui-primary-dark:    #228A7C;
+
+  /* ── UI Secondary (navy ramp) ── */
+  --color-ui-secondary-dim:     #E3E9F4;
+  --color-ui-secondary-light:   #374E7A;
+  --color-ui-secondary-default: #1B2B4C;
+  --color-ui-secondary-dark:    #05183C;
+
+  /* ── UI Neutrals ── */
+  --color-ui-neutral-white:       #FFFFFF;
+  --color-ui-neutral-100:         var(--ui-neutral-100);
+  --color-ui-neutral-200:         var(--ui-neutral-200);
+  --color-ui-neutral-300:         var(--ui-neutral-300);
+  --color-ui-neutral-400:         var(--ui-neutral-400);
+  --color-ui-neutral-500:         var(--ui-neutral-500);
+  --color-ui-neutral-600:         var(--ui-neutral-600);
+  --color-ui-neutral-700:         var(--ui-neutral-700);
+  --color-ui-neutral-800:         var(--ui-neutral-800);
+  --color-ui-neutral-900:         var(--ui-neutral-900);
+  --color-ui-neutral-table-zebra: var(--ui-neutral-table-zebra);
+
+  /* ── UI Semantic ── */
+  --color-ui-semantic-success: #1EE0AC;
+  --color-ui-semantic-danger:  #E85347;
+  --color-ui-semantic-warning: #F4BD0E;
+  --color-ui-semantic-info:    #09C2DE;
+
+  /* ── Shadows ── */
+  --shadow-card:         1px 1px 4px 0px rgba(0, 0, 0, 0.10);
+  --shadow-table-border: inset 0 -1px 0 #D6DDEE;
+  --shadow-modal:        0px 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* ── Typography ── */
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
+  --font-mono: var(--font-mono);
+}
+
+/* ─── Root Values — Light mode ───────────────────────────────────────────── */
+
+:root {
+  /* shadcn semantic tokens */
+  --background: #FFFFFF;
+  --foreground: #1F2B3A;
+  --card: #FFFFFF;
+  --card-foreground: #1F2B3A;
+  --popover: #FFFFFF;
+  --popover-foreground: #1F2B3A;
+  --primary: #32BBAA;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1B2B4C;
+  --secondary-foreground: #FFFFFF;
+  --muted: #F5F6FA;
+  --muted-foreground: #8094AE;
+  --accent: #D9F3EF;
+  --accent-foreground: #32BBAA;
+  --destructive: #E85347;
+  --border: #EBEEF2;
+  --input: #EBEEF2;
+  --ring: #32BBAA;
+  --radius: 0.5rem;
+
+  /* Sidebar */
+  --sidebar: #1B2B4C;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #32BBAA;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #374E7A;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #374E7A;
+  --sidebar-ring: #32BBAA;
+
+  /* Charts */
+  --chart-1: #32BBAA;
+  --chart-2: #45C3D5;
+  --chart-3: #765AA6;
+  --chart-4: #FBDE64;
+  --chart-5: #F06672;
+
+  /* Neutral scale — light mode */
+  --ui-neutral-100:         #F5F6FA;
+  --ui-neutral-200:         #EBEEF2;
+  --ui-neutral-300:         #DBDFEA;
+  --ui-neutral-400:         #B7C2D0;
+  --ui-neutral-500:         #8094AE;
+  --ui-neutral-600:         #6E82A5;
+  --ui-neutral-700:         #526484;
+  --ui-neutral-800:         #364A63;
+  --ui-neutral-900:         #1F2B3A;
+  --ui-neutral-table-zebra: #F3F6FD;
+
+  /* UI Primary dim */
+  --ui-primary-dim: #D9F3EF;
+
+  /* Typography */
+  --font-sans:    'Open Sans', sans-serif;
+  --font-heading: 'Montserrat', sans-serif;
+  --font-mono:    'Geist Mono', monospace;
+}
+
+/* ─── Dark mode ───────────────────────────────────────────────────────────── */
+
+.dark {
+  --background: #141E2E;
+  --foreground: #EDF1F7;
+  --card: #1B2B4C;
+  --card-foreground: #EDF1F7;
+  --popover: #1B2B4C;
+  --popover-foreground: #EDF1F7;
+  --primary: #32BBAA;
+  --primary-foreground: #FFFFFF;
+  --secondary: #374E7A;
+  --secondary-foreground: #FFFFFF;
+  --muted: #243656;
+  --muted-foreground: #8094AE;
+  --accent: #1D3D38;
+  --accent-foreground: #5ECFC1;
+  --destructive: #F06672;
+  --border: #2D4060;
+  --input: #2D4060;
+  --ring: #32BBAA;
+
+  --sidebar: #0F1A2B;
+  --sidebar-foreground: #EDF1F7;
+  --sidebar-primary: #32BBAA;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1B2B4C;
+  --sidebar-accent-foreground: #EDF1F7;
+  --sidebar-border: #1B2B4C;
+  --sidebar-ring: #32BBAA;
+
+  --ui-neutral-100:         #1E2E47;
+  --ui-neutral-200:         #2D4060;
+  --ui-neutral-300:         #3D5278;
+  --ui-neutral-400:         #526484;
+  --ui-neutral-500:         #6E82A5;
+  --ui-neutral-600:         #8094AE;
+  --ui-neutral-700:         #A8B8CC;
+  --ui-neutral-800:         #C8D5E3;
+  --ui-neutral-900:         #EDF1F7;
+  --ui-neutral-table-zebra: #1A2B45;
+
+  --ui-primary-dim: #1D3D38;
+}
+
+/* ─── Base ────────────────────────────────────────────────────────────────── */
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans), sans-serif;
+    font-size: 13px;
+    line-height: 24px;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading), var(--font-sans), sans-serif;
+    margin: 0;
+  }
+  h1 { font-size: 28px; line-height: 32px; font-weight: 700; letter-spacing: -0.01em; }
+  h2 { font-size: 22px; line-height: 28px; font-weight: 700; }
+  h3 { font-size: 16px; line-height: 24px; font-weight: 600; }
+  button:not(:disabled), [role="button"]:not(:disabled) { cursor: pointer; }
+  input[type="date"] {
+    display: flex;
+    align-items: center;
+    align-content: space-between;
+  }
+  input[type="date"]::-webkit-datetime-edit { flex: 1; padding: 0; }
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    margin-left: auto;
+    cursor: pointer;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+  input[type="date"]:hover::-webkit-calendar-picker-indicator,
+  input[type="date"]:focus::-webkit-calendar-picker-indicator { opacity: 0.8; }
+  #root { height: 100%; }
+  html, body { height: 100%; }
+}
+
+/* Sidebar item height */
+[data-sidebar="menu-button"] {
+  height: 40px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #B7C2D0; border-radius: 3px; }
+
+/* Animations */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-5px); }
+  40%       { transform: translateX(5px); }
+  60%       { transform: translateX(-3px); }
+  80%       { transform: translateX(2px); }
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@layer utilities {
+  .animate-shake { animation: shake 0.35s ease-in-out; }
+}

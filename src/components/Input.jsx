@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
 
 export function FormField({ label, error, helper, children }) {
@@ -139,6 +139,154 @@ export function Select({ value, onChange, options = [], disabled = false, placeh
         ))}
       </select>
       <ChevronDown size={16} color="#8094AE" style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+    </div>
+  )
+}
+
+export function SearchableSelect({
+  value,
+  onChange,
+  options = [],
+  disabled = false,
+  placeholder = 'Selecione...',
+  error = false,
+  style: extraStyle = {},
+}) {
+  const [open, setOpen] = useState(false)
+  const [search, setSearch] = useState('')
+  const containerRef = useRef(null)
+
+  useEffect(() => {
+    if (!open) return
+    function handleClickOutside(e) {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setOpen(false)
+        setSearch('')
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [open])
+
+  const getLabel = (opt) => typeof opt === 'string' ? opt : opt.label
+  const getValue = (opt) => typeof opt === 'string' ? opt : opt.value
+
+  const selectedLabel = (() => {
+    if (!value) return null
+    const found = options.find(o => getValue(o) === value)
+    return found ? getLabel(found) : value
+  })()
+
+  const filtered = options.filter(opt =>
+    getLabel(opt).toLowerCase().includes(search.toLowerCase())
+  )
+
+  const handleSelect = (opt) => {
+    onChange({ target: { value: getValue(opt) } })
+    setOpen(false)
+    setSearch('')
+  }
+
+  return (
+    <div ref={containerRef} style={{ position: 'relative', width: '100%', ...extraStyle }}>
+      <div
+        onClick={() => !disabled && setOpen(o => !o)}
+        style={{
+          height: 40,
+          width: '100%',
+          border: `1px solid ${error ? '#E85347' : open ? '#32BBAA' : '#DBDFEA'}`,
+          borderRadius: 'var(--radius-input)',
+          padding: '0 36px 0 12px',
+          fontSize: 14,
+          background: disabled ? '#F5F6FA' : '#FFFFFF',
+          color: selectedLabel ? '#1F2B3A' : '#8094AE',
+          display: 'flex',
+          alignItems: 'center',
+          cursor: disabled ? 'not-allowed' : 'pointer',
+          fontFamily: 'Open Sans, sans-serif',
+          outline: open ? '2px solid #D9F3EF' : 'none',
+          userSelect: 'none',
+          position: 'relative',
+          boxSizing: 'border-box',
+        }}
+      >
+        <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {selectedLabel || placeholder}
+        </span>
+        <ChevronDown
+          size={16}
+          color="#8094AE"
+          style={{
+            position: 'absolute', right: 10, top: '50%',
+            transform: `translateY(-50%) rotate(${open ? 180 : 0}deg)`,
+            transition: 'transform 0.15s',
+            pointerEvents: 'none',
+          }}
+        />
+      </div>
+
+      {open && (
+        <div style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          zIndex: 200,
+          background: '#FFFFFF',
+          border: '1px solid #DBDFEA',
+          borderRadius: 6,
+          boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+          marginTop: 2,
+          overflow: 'hidden',
+        }}>
+          <div style={{ padding: '6px 8px', borderBottom: '1px solid #F5F6FA' }}>
+            <input
+              autoFocus
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar..."
+              style={{
+                width: '100%',
+                height: 30,
+                border: '1px solid #DBDFEA',
+                borderRadius: 4,
+                padding: '0 10px',
+                fontSize: 13,
+                outline: 'none',
+                fontFamily: 'Open Sans, sans-serif',
+                boxSizing: 'border-box',
+              }}
+            />
+          </div>
+          <div style={{ maxHeight: 200, overflowY: 'auto' }}>
+            {filtered.length === 0 ? (
+              <div style={{ padding: '10px 12px', color: '#8094AE', fontSize: 13 }}>Nenhum resultado</div>
+            ) : filtered.map((opt, i) => {
+              const optValue = getValue(opt)
+              const optLabel = getLabel(opt)
+              const isSelected = value === optValue
+              return (
+                <div
+                  key={optValue || i}
+                  onClick={() => handleSelect(opt)}
+                  style={{
+                    padding: '9px 12px',
+                    fontSize: 13,
+                    color: isSelected ? '#32BBAA' : '#1F2B3A',
+                    fontWeight: isSelected ? 700 : 400,
+                    background: isSelected ? '#EBF9F7' : '#FFFFFF',
+                    cursor: 'pointer',
+                  }}
+                  onMouseEnter={e => { if (!isSelected) e.currentTarget.style.background = '#F5F6FA' }}
+                  onMouseLeave={e => { if (!isSelected) e.currentTarget.style.background = isSelected ? '#EBF9F7' : '#FFFFFF' }}
+                >
+                  {optLabel}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

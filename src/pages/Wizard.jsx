@@ -12,17 +12,11 @@ const STEPS = ['Autenticação', 'Quartos', 'Tarifas', 'Ativar']
 
 // ──────────── Passo 1: Autenticação ────────────
 function Step1({ onNext }) {
-  const [accountId, setAccountId] = useState('')
-  const [tipoTarifa, setTipoTarifa] = useState('')
+  const [accountId, setAccountId] = useState('4721893')
+  const [tipoTarifa, setTipoTarifa] = useState('Standard')
   const [status, setStatus] = useState('idle') // idle | loading | aguardando | conectado
-  const [errors, setErrors] = useState({})
 
   const solicitar = () => {
-    const errs = {}
-    if (!accountId.trim()) errs.accountId = 'Informe o ID da conta'
-    if (!tipoTarifa) errs.tipoTarifa = 'Selecione o tipo de tarifa'
-    if (Object.keys(errs).length) { setErrors(errs); return }
-    setErrors({})
     setStatus('loading')
     setTimeout(() => {
       setStatus('aguardando')
@@ -42,23 +36,20 @@ function Step1({ onNext }) {
           <FormField
             label="ID da conta Booking.com"
             helper="Você encontra o ID em: Booking Extranet → Serviço de conectividade"
-            error={errors.accountId}
           >
             <Input
               value={accountId}
               onChange={e => setAccountId(e.target.value)}
               placeholder="Ex: 4721893"
-              error={!!errors.accountId}
             />
           </FormField>
 
-          <FormField label="Tipo de tarifa" error={errors.tipoTarifa}>
+          <FormField label="Tipo de tarifa">
             <Select
               value={tipoTarifa}
               onChange={e => setTipoTarifa(e.target.value)}
               options={['Standard', 'OBP (adulto extra)']}
               placeholder="Selecione o tipo..."
-              error={!!errors.tipoTarifa}
             />
           </FormField>
 
@@ -110,17 +101,9 @@ function Step1({ onNext }) {
 // ──────────── Passo 2: Quartos ────────────
 function Step2({ onNext, onBack }) {
   const [quartos, setQuartos] = useState(mapeamentoBooking.quartos)
-  const [showError, setShowError] = useState(false)
 
   const updateQuarto = (id, categoria) => {
     setQuartos(prev => prev.map(q => q.id === id ? { ...q, categoriaSelecionada: categoria } : q))
-    if (showError) setShowError(false)
-  }
-
-  const handleNext = () => {
-    const incompleto = quartos.some(q => !q.categoriaSelecionada)
-    if (incompleto) { setShowError(true); return }
-    onNext()
   }
 
   return (
@@ -131,11 +114,6 @@ function Step2({ onNext, onBack }) {
           <InfoBox type="info">
             Os quartos abaixo foram importados automaticamente do canal. Associe cada um à categoria correspondente no PMS.
           </InfoBox>
-          {showError && (
-            <InfoBox type="warning">
-              Complete o mapeamento de todos os quartos antes de continuar.
-            </InfoBox>
-          )}
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <thead>
@@ -150,7 +128,7 @@ function Step2({ onNext, onBack }) {
                 {quartos.map((q, i) => {
                   const pendente = showError && !q.categoriaSelecionada
                   return (
-                    <tr key={q.id} style={{ background: pendente ? '#FEF9E7' : (i % 2 === 0 ? '#FFFFFF' : '#F5F6FA'), boxShadow: 'inset 0 -1px 0 #D6DDEE' }}>
+                    <tr key={q.id} style={{ background: i % 2 === 0 ? '#FFFFFF' : '#F5F6FA', boxShadow: 'inset 0 -1px 0 #D6DDEE' }}>
                       <td style={{ padding: '14px 16px' }}>
                         <div style={{ fontWeight: 700 }}>{q.nomeCanalQuarto}</div>
                         <div style={{ fontSize: 12, color: '#8094AE' }}>Máx. {q.ocupacaoMax} hóspedes</div>
@@ -162,7 +140,6 @@ function Step2({ onNext, onBack }) {
                           onChange={e => updateQuarto(q.id, e.target.value)}
                           options={mapeamentoBooking.categoriasPMS}
                           placeholder="Selecione categoria..."
-                          error={pendente}
                         />
                       </td>
                       <td style={{ padding: '14px 16px', textAlign: 'center' }}>
@@ -178,7 +155,7 @@ function Step2({ onNext, onBack }) {
       </CardBody>
       <CardFooter>
         <Button variant="neutral" onClick={onBack}>← Voltar</Button>
-        <Button variant="primary" onClick={handleNext}>Próximo →</Button>
+        <Button variant="primary" onClick={onNext}>Próximo →</Button>
       </CardFooter>
     </Card>
   )
@@ -338,19 +315,31 @@ function Step4({ onActivate, onBack }) {
 // ──────────── Tela de Sucesso ────────────
 function Sucesso() {
   const navigate = useNavigate()
+  React.useEffect(() => {
+    const t = setTimeout(() => navigate('/canais/booking#mapeamento'), 3500)
+    return () => clearTimeout(t)
+  }, [navigate])
   return (
     <div style={{ display: 'flex', justifyContent: 'center', padding: '40px 0' }}>
       <Card style={{ maxWidth: 480, textAlign: 'center', padding: 48 }}>
         <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#E8FDF6', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
           <Check size={36} color="#1EE0AC" strokeWidth={2.5} />
         </div>
-        <h2 style={{ color: '#1F2B3A', marginBottom: 12 }}>Booking.com conectado com sucesso!</h2>
-        <p style={{ color: '#8094AE', fontSize: 14, lineHeight: '22px', marginBottom: 32 }}>
+        <h2 style={{ color: '#1F2B3A', marginBottom: 12 }}>Booking.com conectado!</h2>
+        <p style={{ color: '#8094AE', fontSize: 14, lineHeight: '22px', marginBottom: 8 }}>
           Primeira sincronização concluída — 4 categorias · 3 tarifas · disponibilidade enviada
         </p>
-        <Button variant="primary" size="lg" onClick={() => navigate('/canais/booking')} fullWidth>
-          Ver painel do canal
-        </Button>
+        <p style={{ color: '#32BBAA', fontSize: 13, fontWeight: 700, marginBottom: 32 }}>
+          Redirecionando para o mapeamento...
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <Button variant="primary" size="lg" onClick={() => navigate('/canais/booking#mapeamento')} fullWidth>
+            Ir para Mapeamento →
+          </Button>
+          <Button variant="neutral" size="lg" onClick={() => navigate('/canais')} fullWidth>
+            Voltar para canais
+          </Button>
+        </div>
       </Card>
     </div>
   )

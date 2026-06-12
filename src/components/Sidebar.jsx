@@ -1,12 +1,13 @@
 import React, { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import {
   Home, BarChart2, Map, Calendar, Users, Coffee,
   CreditCard, DollarSign, HelpCircle, Globe, ChevronDown,
-  ChevronRight, LayoutDashboard, BookOpen,
+  ChevronRight, LayoutDashboard, LogOut, ScrollText,
 } from 'lucide-react'
+import { usePerfil } from '../contexts/PerfilContext.jsx'
 
-const mainNavItems = [
+const mainNavItemsAll = [
   { id: 'home', label: 'Home', icon: Home, path: '/home' },
   { id: 'indicadores', label: 'Indicadores', icon: BarChart2, path: '/indicadores', disabled: true },
   { id: 'mapa', label: 'Mapa', icon: Map, path: '/mapa', disabled: true },
@@ -18,42 +19,48 @@ const mainNavItems = [
   { id: 'ajuda', label: 'Ajuda', icon: HelpCircle, path: '/ajuda', disabled: true },
 ]
 
-const canaisSubItems = [
+const canaisSubItemsAll = [
   { id: 'dashboard', label: 'Dashboard', path: '/canais/dashboard', icon: LayoutDashboard },
-  { id: 'reservas', label: 'Reservas', path: '/canais/reservas', icon: BookOpen },
   { id: 'booking', label: 'Booking.com', path: '/canais/booking', icon: null },
   { id: 'airbnb', label: 'Airbnb', path: '/canais/airbnb', icon: null },
   { id: 'expedia', label: 'Expedia', path: '/canais/expedia', icon: null, disabled: true },
 ]
 
-export default function Sidebar({ collapsed, onToggle }) {
+const canaisSubItemsHoteleiro = [
+  { id: 'dashboard', label: 'Dashboard', path: '/canais/dashboard', icon: LayoutDashboard },
+]
+
+export default function Sidebar() {
   const navigate = useNavigate()
   const location = useLocation()
-  const [canaisOpen, setCanaisOpen] = useState(
-    location.pathname.startsWith('/canais')
-  )
+  const { perfil, setPerfil } = usePerfil()
+  const isHoteleiro = perfil === 'hoteleiro'
+
+  const [canaisOpen, setCanaisOpen] = useState(location.pathname.startsWith('/canais'))
+
+  const canaisSubItems = isHoteleiro ? canaisSubItemsHoteleiro : canaisSubItemsAll
 
   const isActive = (path) => {
     if (path === '/canais') return location.pathname.startsWith('/canais')
     return location.pathname === path || location.pathname.startsWith(path + '/')
   }
 
-  const navItemStyle = (active, disabled) => ({
+  const navItemStyle = (active, disabled, special) => ({
     display: 'flex',
     alignItems: 'center',
-    gap: 10,
-    padding: '10px 16px',
+    gap: 9,
+    padding: '8px 14px',
     borderRadius: 6,
     cursor: disabled ? 'not-allowed' : 'pointer',
-    background: active ? '#374E7A' : 'transparent',
-    color: active ? '#FFFFFF' : disabled ? '#526484' : 'rgba(255,255,255,0.8)',
-    fontSize: 14,
+    background: active ? 'rgba(0,0,0,0.25)' : 'transparent',
+    color: special ? '#F0B429' : active ? '#FFFFFF' : disabled ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.85)',
+    fontSize: 13,
     fontWeight: active ? 700 : 400,
     fontFamily: 'Open Sans, sans-serif',
     borderLeft: active ? '3px solid #32BBAA' : '3px solid transparent',
     transition: 'background 0.15s',
     userSelect: 'none',
-    opacity: disabled ? 0.5 : 1,
+    opacity: disabled ? 0.45 : 1,
     textDecoration: 'none',
   })
 
@@ -61,12 +68,12 @@ export default function Sidebar({ collapsed, onToggle }) {
     display: 'flex',
     alignItems: 'center',
     gap: 8,
-    padding: '8px 16px 8px 44px',
+    padding: '7px 14px 7px 40px',
     borderRadius: 6,
     cursor: disabled ? 'not-allowed' : 'pointer',
     background: active ? 'rgba(50,187,170,0.15)' : 'transparent',
-    color: active ? '#32BBAA' : disabled ? '#526484' : 'rgba(255,255,255,0.7)',
-    fontSize: 13,
+    color: active ? '#32BBAA' : disabled ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.7)',
+    fontSize: 12,
     fontWeight: active ? 700 : 400,
     fontFamily: 'Open Sans, sans-serif',
     transition: 'background 0.15s',
@@ -74,10 +81,14 @@ export default function Sidebar({ collapsed, onToggle }) {
     whiteSpace: 'nowrap',
   })
 
+  const isBeforeCanais = (id) => ['home', 'indicadores', 'mapa', 'reservas'].includes(id)
+  const navBeforeCanais = mainNavItemsAll.filter(i => isBeforeCanais(i.id))
+  const navAfterCanais = mainNavItemsAll.filter(i => !isBeforeCanais(i.id))
+
   return (
     <div style={{
-      width: 240,
-      background: '#1B2B4C',
+      width: 232,
+      background: '#2B3849',
       height: '100%',
       display: 'flex',
       flexDirection: 'column',
@@ -86,44 +97,38 @@ export default function Sidebar({ collapsed, onToggle }) {
       overflowX: 'hidden',
     }}>
       {/* Logo */}
-      <div style={{ padding: '20px 20px 16px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+      <div style={{ padding: '16px 16px 14px', borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: 8,
-            background: '#32BBAA',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-          }}>
-            <Home size={18} color="white" />
-          </div>
-          <span style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: 18, color: '#FFFFFF' }}>
+          <Home size={22} color="#F0B429" strokeWidth={1.8} />
+          <span style={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 700, fontSize: 17, color: '#FFFFFF', letterSpacing: '0.01em' }}>
             Hospedin
           </span>
         </div>
       </div>
 
       {/* Nav */}
-      <div style={{ padding: '16px 8px', flex: 1 }}>
-        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', color: '#6E82A5', padding: '0 12px', marginBottom: 8 }}>
+      <div style={{ padding: '12px 6px', flex: 1 }}>
+        <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.05em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', padding: '0 10px', marginBottom: 6 }}>
           Menu Principal
         </div>
 
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {mainNavItems.slice(0, 4).map(item => (
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {navBeforeCanais.map(item => (
             <div
               key={item.id}
-              style={navItemStyle(isActive(item.path) && !item.disabled, item.disabled)}
-              onClick={() => {
-                if (!item.disabled) navigate(item.path)
-              }}
-              onMouseEnter={e => { if (!item.disabled && !isActive(item.path)) e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
+              style={navItemStyle(isActive(item.path) && !item.disabled, item.disabled, item.id === 'ajuda')}
+              onClick={() => { if (!item.disabled) navigate(item.path) }}
+              onMouseEnter={e => { if (!item.disabled && !isActive(item.path)) e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
               onMouseLeave={e => { if (!isActive(item.path)) e.currentTarget.style.background = 'transparent' }}
             >
-              <item.icon size={17} />
+              <item.icon size={15} strokeWidth={1.5} />
               <span>{item.label}</span>
             </div>
           ))}
 
-          {/* Canais accordion — inserted after Reservas */}
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '6px 8px' }} />
+
+          {/* Canais accordion */}
           <div>
             <div
               style={{
@@ -134,34 +139,37 @@ export default function Sidebar({ collapsed, onToggle }) {
                 setCanaisOpen(o => !o)
                 if (!canaisOpen) navigate('/canais')
               }}
-              onMouseEnter={e => { if (!location.pathname.startsWith('/canais')) e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
+              onMouseEnter={e => { if (!location.pathname.startsWith('/canais')) e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
               onMouseLeave={e => { if (!location.pathname.startsWith('/canais')) e.currentTarget.style.background = 'transparent' }}
             >
-              <span style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                <Globe size={17} />
+              <span style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                <Globe size={15} strokeWidth={1.5} />
                 <span>Canais</span>
               </span>
-              {canaisOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+              {canaisOpen ? <ChevronDown size={13} strokeWidth={1.5} /> : <ChevronRight size={13} strokeWidth={1.5} />}
             </div>
 
             {canaisOpen && (
-              <div style={{ marginTop: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
+              <div style={{ marginTop: 1, display: 'flex', flexDirection: 'column', gap: 0 }}>
                 {canaisSubItems.map(sub => (
                   <div
                     key={sub.id}
-                    style={subItemStyle(location.pathname === sub.path || (sub.path !== '/canais/dashboard' && sub.path !== '/canais/reservas' && location.pathname.startsWith(sub.path + '/')), sub.disabled)}
+                    style={subItemStyle(
+                      location.pathname === sub.path || (sub.path !== '/canais/dashboard' && location.pathname.startsWith(sub.path + '/')),
+                      sub.disabled
+                    )}
                     onClick={() => { if (!sub.disabled) navigate(sub.path) }}
                     onMouseEnter={e => {
                       if (!sub.disabled && !(location.pathname === sub.path))
-                        e.currentTarget.style.background = 'rgba(255,255,255,0.06)'
+                        e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
                     }}
                     onMouseLeave={e => {
                       if (!(location.pathname === sub.path))
                         e.currentTarget.style.background = 'transparent'
                     }}
                   >
-                    {sub.icon && <sub.icon size={14} />}
-                    {!sub.icon && <span style={{ width: 14, height: 14, display: 'inline-block' }} />}
+                    {sub.icon && <sub.icon size={13} strokeWidth={1.5} />}
+                    {!sub.icon && <span style={{ width: 13, display: 'inline-block' }} />}
                     {sub.label}
                     {sub.disabled && <span style={{ fontSize: 10, color: '#526484', marginLeft: 4 }}>(em breve)</span>}
                   </div>
@@ -170,15 +178,30 @@ export default function Sidebar({ collapsed, onToggle }) {
             )}
           </div>
 
-          {mainNavItems.slice(4).map(item => (
+          {/* Logs — apenas implantador */}
+          {!isHoteleiro && (
+            <div
+              style={navItemStyle(location.pathname === '/logs', false)}
+              onClick={() => navigate('/logs')}
+              onMouseEnter={e => { if (location.pathname !== '/logs') e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
+              onMouseLeave={e => { if (location.pathname !== '/logs') e.currentTarget.style.background = 'transparent' }}
+            >
+              <ScrollText size={15} strokeWidth={1.5} />
+              <span>Logs</span>
+            </div>
+          )}
+
+          <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', margin: '6px 8px' }} />
+
+          {navAfterCanais.map(item => (
             <div
               key={item.id}
-              style={navItemStyle(false, item.disabled)}
+              style={navItemStyle(false, item.disabled, item.id === 'ajuda')}
               onClick={() => { if (!item.disabled) navigate(item.path) }}
-              onMouseEnter={e => { if (!item.disabled) e.currentTarget.style.background = 'rgba(255,255,255,0.08)' }}
+              onMouseEnter={e => { if (!item.disabled) e.currentTarget.style.background = 'rgba(255,255,255,0.06)' }}
               onMouseLeave={e => { e.currentTarget.style.background = 'transparent' }}
             >
-              <item.icon size={17} />
+              <item.icon size={15} strokeWidth={1.5} />
               <span>{item.label}</span>
             </div>
           ))}
@@ -186,16 +209,30 @@ export default function Sidebar({ collapsed, onToggle }) {
       </div>
 
       {/* Footer */}
-      <div style={{ padding: '16px 20px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#374E7A', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <span style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}>HB</span>
+      <div style={{ padding: '12px 16px', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginBottom: 10 }}>
+          <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'rgba(0,0,0,0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <span style={{ color: '#FFFFFF', fontSize: 11, fontWeight: 700 }}>HB</span>
           </div>
-          <div>
-            <div style={{ color: '#FFFFFF', fontSize: 13, fontWeight: 700 }}>Hospedin Bell</div>
-            <div style={{ color: '#6E82A5', fontSize: 11 }}>Implantador</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ color: '#FFFFFF', fontSize: 12, fontWeight: 700 }}>Hospedin Bell</div>
+            <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 11, textTransform: 'capitalize' }}>{perfil || 'Implantador'}</div>
           </div>
         </div>
+        <Link
+          to="/"
+          onClick={() => setPerfil(null)}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 6,
+            color: '#6E82A5', fontSize: 11, textDecoration: 'none',
+            padding: '4px 0',
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = '#32BBAA'}
+          onMouseLeave={e => e.currentTarget.style.color = '#6E82A5'}
+        >
+          <LogOut size={12} strokeWidth={1.5} />
+          Trocar perfil
+        </Link>
       </div>
     </div>
   )

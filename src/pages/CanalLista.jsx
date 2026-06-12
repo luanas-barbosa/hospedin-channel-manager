@@ -1,192 +1,138 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import { RefreshCw, Zap, AlertTriangle, Info, ArrowRight } from 'lucide-react'
-import { canais } from '../data/mock.js'
-import { StatusBadge } from '../components/Badge.jsx'
-import { Card, CardBody } from '../components/Card.jsx'
-import Button from '../components/Button.jsx'
+import { PageShell } from '../components/PageShell.tsx'
 
-function CanalIcon({ canal }) {
-  const configs = {
-    booking: { label: 'B.', bg: '#003580', text: '#FFFFFF' },
-    airbnb: { label: 'Air', bg: '#FF5A5F', text: '#FFFFFF' },
-    expedia: { label: 'Exp', bg: '#FFC72C', text: '#1B2B4C' },
-    rede: { label: 'RH', bg: '#8094AE', text: '#FFFFFF' },
-  }
-  const cfg = configs[canal.id] || { label: canal.nome[0], bg: canal.cor, text: canal.textoCor }
-  return (
-    <div style={{
-      width: 44, height: 44, borderRadius: 8,
-      background: cfg.bg, color: cfg.text,
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      fontSize: 13, fontWeight: 700, fontFamily: 'Montserrat, sans-serif',
-      flexShrink: 0,
-    }}>
-      {cfg.label}
-    </div>
-  )
+const CANAIS = [
+  { id: 'booking', nome: 'Booking.com', sigla: 'BDC', cor: '#003580', textoCor: '#FFFFFF', status: 'conectado', info: 'ID 6314570 · 4 quartos mapeados', path: '/canais/booking' },
+  { id: 'expedia', nome: 'Expedia / Hotels.com', sigla: 'EXP', cor: '#1B3A8C', textoCor: '#FFFFFF', status: 'conectado', info: 'ID 18492031 · 4 quartos mapeados', path: '/canais/expedia' },
+  { id: 'airbnb', nome: 'Airbnb', sigla: 'AIR', cor: '#FF5A5F', textoCor: '#FFFFFF', status: 'pendente', info: null, path: '/canais/conectar/airbnb' },
+  { id: 'decolar', nome: 'Decolar', sigla: 'DEC', cor: '#E8A317', textoCor: '#FFFFFF', status: 'nao_configurado', info: 'OTA líder América Latina', path: '/canais/conectar/decolar' },
+]
+
+const STATUS_BADGE = {
+  conectado: { label: 'Conectado', bg: '#E8FDF6', color: '#0D9965', border: '#A0EDD4' },
+  pendente: { label: 'Pendente', bg: '#FFF8EC', color: '#B7810A', border: '#F4D98A' },
+  nao_configurado: { label: 'Não configurado', bg: '#F5F6FA', color: '#8094AE', border: '#DBDFEA' },
 }
 
-function CanalCard({ canal }) {
-  const navigate = useNavigate()
-
+function StatusBadge({ status }) {
+  const s = STATUS_BADGE[status] || STATUS_BADGE.nao_configurado
   return (
-    <Card style={{ padding: 0, opacity: canal.disabled ? 0.6 : 1 }}>
-      <div style={{ padding: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
-          <CanalIcon canal={canal} />
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 15, color: '#1F2B3A' }}>{canal.nome}</div>
-            <StatusBadge status={canal.status} />
-          </div>
-        </div>
-
-        {canal.status === 'conectado' && (
-          <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
-            <div style={{ background: '#F5F6FA', borderRadius: 6, padding: '8px 12px', flex: 1 }}>
-              <div style={{ fontSize: 11, color: '#8094AE', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Última sync</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#1F2B3A', display: 'flex', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                <RefreshCw size={13} color="#32BBAA" />
-                {canal.ultimaSync}
-              </div>
-            </div>
-            <div style={{ background: '#F5F6FA', borderRadius: 6, padding: '8px 12px', flex: 1 }}>
-              <div style={{ fontSize: 11, color: '#8094AE', textTransform: 'uppercase', fontWeight: 700, letterSpacing: '0.04em' }}>Taxa de sucesso</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: '#1EE0AC', marginTop: 2 }}>
-                {canal.taxaSucesso}%
-              </div>
-            </div>
-          </div>
-        )}
-
-        {canal.status === 'aguardando' && canal.descricao && (
-          <div style={{
-            background: '#FEF9E7', borderLeft: '3px solid #F4BD0E',
-            borderRadius: 4, padding: '10px 12px', marginBottom: 16, fontSize: 13, color: '#1B2B4C',
-          }}>
-            <AlertTriangle size={13} style={{ marginRight: 6, verticalAlign: 'middle', color: '#F4BD0E' }} />
-            {canal.descricao}
-          </div>
-        )}
-
-        {canal.disabled && canal.descricao && (
-          <div style={{
-            background: '#F5F6FA', borderRadius: 4, padding: '10px 12px',
-            marginBottom: 16, fontSize: 13, color: '#8094AE', textAlign: 'center',
-          }}>
-            {canal.descricao}
-          </div>
-        )}
-      </div>
-
-      <div style={{ padding: '12px 24px', borderTop: '1px solid #EBEEF2', display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-        {canal.status === 'conectado' && !canal.disabled && (
-          <Button variant="primary" size="sm" onClick={() => navigate(`/canais/${canal.id}`)}>
-            Gerenciar
-          </Button>
-        )}
-        {canal.status === 'aguardando' && !canal.disabled && (
-          <Button variant="outline" size="sm" onClick={() => navigate(`/canais/${canal.id}`)}>
-            Ver status
-          </Button>
-        )}
-        {canal.status === 'disponivel' && !canal.disabled && (
-          <Button variant="secondary" size="sm" onClick={() => navigate(`/canais/${canal.id}/conectar`)}>
-            <Zap size={13} />
-            Conectar
-          </Button>
-        )}
-        {canal.disabled && (
-          <Button variant="neutral" size="sm" disabled>
-            Em breve
-          </Button>
-        )}
-      </div>
-    </Card>
+    <span style={{
+      padding: '3px 10px', borderRadius: 20, fontSize: 11, fontWeight: 700,
+      background: s.bg, color: s.color, border: `1px solid ${s.border}`,
+    }}>
+      {s.label}
+    </span>
   )
 }
 
 export default function CanalLista() {
   const navigate = useNavigate()
 
+  const action = (
+    <button
+      onClick={() => navigate('/canais/conectar/novo')}
+      style={{
+        display: 'flex', alignItems: 'center', gap: 6,
+        padding: '8px 18px', borderRadius: 6, border: 'none',
+        background: '#19c2a8', color: '#FFFFFF', fontSize: 13, fontWeight: 700,
+        cursor: 'pointer', fontFamily: 'Open Sans, sans-serif',
+      }}
+    >
+      + Conectar canal
+    </button>
+  )
+
   return (
-    <div>
-      {/* Page header */}
-      <div style={{ marginBottom: 24 }}>
-        <h1>Canais</h1>
-        <p style={{ color: '#8094AE', marginTop: 4, marginBottom: 0 }}>
-          Gerencie as conexões com os canais de distribuição
-        </p>
-      </div>
+    <PageShell
+      title="Configuração de Canais"
+      description="Conecte e configure os canais de distribuição da propriedade"
+      breadcrumbs={[{ label: 'Home', path: '/home' }, { label: 'Canais' }, { label: 'Configuração' }]}
+      action={action}
+    >
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+        {CANAIS.map(canal => (
+          <div key={canal.id} style={{
+            background: '#FFFFFF', border: '1px solid #EBEEF2', borderRadius: 10, padding: 20,
+            display: 'flex', flexDirection: 'column', gap: 12,
+          }}>
+            {/* Header: icon + status */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 10, background: canal.cor, color: canal.textoCor,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, fontWeight: 700, fontFamily: 'Montserrat, sans-serif',
+              }}>
+                {canal.sigla}
+              </div>
+              <StatusBadge status={canal.status} />
+            </div>
 
-      {/* Canal cards grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20, marginBottom: 32 }}>
-        {canais.map(canal => (
-          <CanalCard key={canal.id} canal={canal} />
+            {/* Name + info */}
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 15, color: '#1F2B3A' }}>{canal.nome}</div>
+              {canal.status === 'pendente' && (
+                <div style={{ fontSize: 12, color: '#B7810A', marginTop: 4, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  ⚠ Concluir configuração
+                </div>
+              )}
+              {canal.info && (
+                <div style={{ fontSize: 12, color: '#8094AE', marginTop: 4 }}>{canal.info}</div>
+              )}
+            </div>
+
+            {/* Action button */}
+            {canal.status === 'conectado' && (
+              <button
+                onClick={() => navigate(canal.path)}
+                style={{
+                  width: '100%', padding: '9px 0', borderRadius: 6,
+                  border: '1px solid #D6DDEE', background: '#FFFFFF',
+                  fontSize: 13, fontWeight: 600, color: '#526484', cursor: 'pointer',
+                }}
+              >
+                Editar mapeamento
+              </button>
+            )}
+            {canal.status === 'pendente' && (
+              <button
+                onClick={() => navigate(canal.path)}
+                style={{
+                  width: '100%', padding: '9px 0', borderRadius: 6,
+                  border: 'none', background: '#19c2a8',
+                  fontSize: 13, fontWeight: 700, color: '#FFFFFF', cursor: 'pointer',
+                }}
+              >
+                Continuar
+              </button>
+            )}
+            {canal.status === 'nao_configurado' && (
+              <button
+                onClick={() => navigate(canal.path)}
+                style={{
+                  width: '100%', padding: '9px 0', borderRadius: 6,
+                  border: '1px solid #D6DDEE', background: '#FFFFFF',
+                  fontSize: 13, fontWeight: 600, color: '#526484', cursor: 'pointer',
+                }}
+              >
+                Conectar
+              </button>
+            )}
+          </div>
         ))}
+
+        {/* Mais canais placeholder */}
+        <div style={{
+          background: '#FAFBFC', border: '1.5px dashed #D6DDEE', borderRadius: 10, padding: 20,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+          gap: 8, minHeight: 160,
+        }}>
+          <span style={{ fontSize: 24, color: '#C4CEDE' }}>+</span>
+          <div style={{ fontWeight: 700, fontSize: 14, color: '#8094AE' }}>Mais canais</div>
+          <div style={{ fontSize: 12, color: '#B7C2D0', textAlign: 'center' }}>Hurb, Omnibees, GDS...</div>
+        </div>
       </div>
-
-      {/* Alertas ativos */}
-      <Card>
-        <div style={{ padding: '16px 24px', borderBottom: '1px solid #EBEEF2', display: 'flex', alignItems: 'center', gap: 8 }}>
-          <AlertTriangle size={16} color="#F4BD0E" />
-          <h3 style={{ margin: 0 }}>Alertas ativos</h3>
-          <span style={{
-            background: '#E85347', color: 'white',
-            fontSize: 11, fontWeight: 700, padding: '1px 7px', borderRadius: 100,
-          }}>2</span>
-        </div>
-        <div style={{ padding: '0 8px' }}>
-          {/* Warning alert */}
-          <div style={{
-            display: 'flex', alignItems: 'flex-start', gap: 12,
-            padding: '14px 16px',
-            borderBottom: '1px solid #F5F6FA',
-          }}>
-            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#FEF9E7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <AlertTriangle size={16} color="#F4BD0E" />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, color: '#1F2B3A', fontSize: 14 }}>
-                Airbnb — 2 falhas de sync nas últimas 4h
-              </div>
-              <div style={{ color: '#8094AE', fontSize: 13, marginTop: 2 }}>
-                Verifique os logs para identificar as entradas com falha.
-              </div>
-            </div>
-            <button
-              onClick={() => navigate('/canais/airbnb')}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#32BBAA', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', padding: '8px 0' }}
-            >
-              Ver logs <ArrowRight size={13} />
-            </button>
-          </div>
-
-          {/* Info alert */}
-          <div style={{
-            display: 'flex', alignItems: 'flex-start', gap: 12,
-            padding: '14px 16px',
-          }}>
-            <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#EBF9F7', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Info size={16} color="#32BBAA" />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 700, color: '#1F2B3A', fontSize: 14 }}>
-                Booking.com — Mapeamento incompleto em Suite Tripla
-              </div>
-              <div style={{ color: '#8094AE', fontSize: 13, marginTop: 2 }}>
-                A categoria "Triple Room" tem conflito de ocupação no mapeamento.
-              </div>
-            </div>
-            <button
-              onClick={() => navigate('/canais/booking')}
-              style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#32BBAA', fontSize: 13, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', padding: '8px 0' }}
-            >
-              Revisar <ArrowRight size={13} />
-            </button>
-          </div>
-        </div>
-      </Card>
-    </div>
+    </PageShell>
   )
 }
